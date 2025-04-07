@@ -1,0 +1,164 @@
+<div class="min-h-screen bg-gray-100 flex flex-col">
+  <!-- Header -->
+  <header
+    class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow"
+  >
+    <div class="flex items-center space-x-8">
+      <div class="text-2xl font-bold">
+        <span class="text-white">🌊</span>
+      </div>
+      <nav class="space-x-6 hidden md:flex">
+        <a href="#" class="hover:underline">Home</a>
+      </nav>
+    </div>
+    <div class="flex items-center space-x-4">
+      <div class="relative">
+        <input
+          type="text"
+          placeholder="Search"
+          class="pl-10 pr-4 py-2 rounded-md bg-blue-500 placeholder-white text-white focus:outline-none"
+        />
+        <span class="absolute left-2 top-2.5 text-white"
+          ><i class="fas fa-search"></i
+        ></span>
+      </div>
+      <button class="text-white text-xl"><i class="fas fa-bell"></i></button>
+      <img
+        src="https://i.pravatar.cc/40"
+        alt="Profile"
+        class="w-9 h-9 rounded-full border-2 border-white"
+      />
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div
+      class="bg-white rounded-xl shadow p-6 h-full col-span-1 lg:col-span-3"
+      [ngClass]="
+        showStudentsPanel
+          ? 'col-span-1 lg:col-span-3'
+          : 'col-span-1 lg:col-span-4'
+      "
+    >
+      <div class="h-full border-2 border-dashed border-gray-300 rounded-md p-6">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <!-- Botón de inscripción -->
+          <div class="mt-4 text-right space-x-2" *ngIf="selectedSubjects.length > 0">
+            <button
+              class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              (click)="registerSubjects()"
+            >
+            {{ isEditMode ? "Modificar Incripción" : "Confirmar Inscripción" }}
+
+            </button>
+            <button *ngIf="isEditMode"
+              class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              (click)="cancelEnrollment()"
+            >
+              Cancelar inscripción
+            </button>
+          </div>
+          <table
+            class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400"
+          >
+            <thead
+              class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+            >
+              <tr>
+                <th scope="col" class="px-6 py-3">Nombre</th>
+                <th scope="col" class="px-6 py-3">Créditos</th>
+                <th scope="col" class="px-6 py-3">Profesor</th>
+                <th scope="col" class="px-6 py-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let subject of subjects"
+                class="border-b border-gray-200"
+                [ngClass]="{
+                  'bg-green-100': isSelected(subject),
+                  'cursor-pointer': true
+                }"
+              >
+                <td
+                  class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  {{ subject.name }}
+                </td>
+                <td class="px-6 py-4">{{ subject.credits }}</td>
+                <td class="px-6 py-4">{{ subject.teacher.name }}</td>
+                <td class="px-6 py-4">
+                  <div class="space-x-2">
+                    <button
+                      class="text-white px-2 py-1 rounded hover:bg-blue-600"
+                      [ngClass]="{
+                        'bg-red-400': isSelected(subject),
+                        'bg-green-600': true
+                      }"
+                      (click)="toggleSelection(subject)"
+                    >
+                      {{ isSelected(subject) ? "Cancelar" : "Inscribir" }}
+                    </button>
+                    <button
+                      *ngIf="isSelected(subject)"
+                      class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                      (click)="getEnrolledStudents(subject)"
+                    >
+                      Ver estudiantes
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div
+      *ngIf="showStudentsPanel"
+      class="bg-white rounded-xl shadow p-6 h-full"
+    >
+    <div class="h-full border-2 border-dashed border-gray-300 rounded-md">
+      <div class="flex justify-start p-3">
+        <button
+          class="bg-gray-200 cursor-pointer text-gray-600 hover:text-gray-800 hover:bg-gray-300 px-3 py-1 rounded transition"
+          (click)="showStudentsPanel = false"
+          title="Cerrar"
+        >
+          <span>Cerrar</span>
+        </button>
+      </div>
+        <div class="flex flex-col items-center justify-center">
+          <h2 class="text-xl font-semibold text-gray-800">
+            Estudiantes inscritos en:
+          </h2>
+          <h2 class="text-xl font-semibold text-gray-800">
+            <span>{{ selectedSubjectName }}</span>
+          </h2>
+        </div>
+        <ul class="divide-y divide-gray-200 p-3">
+          <li *ngFor="let student of students" class="py-2">
+            <div class="text-gray-900 font-medium">{{ student.name }}</div>
+          </li>
+          <li *ngIf="students.length === 0" class="py-2 text-gray-500">
+            No hay estudiantes inscritos.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500">
+    © 2025. All rights reserved.
+  </footer>
+
+  <app-modal
+    [modalId]="'message'"
+    title="¡¡ Atención !!"
+    (close)="closeModal()"
+  >
+    <div class="text-black">{{ message }}</div>
+  </app-modal>
+</div>

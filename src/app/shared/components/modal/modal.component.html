@@ -1,0 +1,46 @@
+<div
+  class="fixed inset-0 flex items-center justify-center bg-gray-300/50 backdrop-blur-sm z-50"
+  [ngClass]="{
+    'opacity-0 pointer-events-none': !isModalOpen,
+    'opacity-100 transition-opacity duration-300': isModalOpen
+  }"
+>
+  <div
+    class="bg-white rounded-lg shadow-lg transition-transform duration-300 transform w-full"
+    [class]="modalWidth"
+    [ngClass]="{
+      'scale-95': !isModalOpen,
+      'scale-100': isModalOpen
+    }"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Encabezado del modal -->
+    <div class="px-4 flex justify-between items-center">
+      <h2 class="text-xl font-semibold text-blue-700 pt-4">{{ title }}</h2>
+      <button
+        (click)="closeModal()"
+        class="text-gray-400 hover:bg-gray-200 rounded-lg p-1"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          viewBox="0 0 14 14"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Cuerpo del modal con contenido dinámico -->
+    <div class="py-6 px-4 bg-gray-50 rounded-lg">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
